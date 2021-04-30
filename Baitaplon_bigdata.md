@@ -42,7 +42,7 @@ Các Công cụ Spark Mllib như:
 
  </p>
  
-### 1.3 Thuật toán ML
+### 1.2.1 Thuật toán ML
  
 <p align="left">Các thuật toán ML chính là cốt lõi của MLlib. Chúng bao gồm các thuật toán học tập phổ biến như phân loại, hồi quy, phân cụm và lọc cộng tác.
 
@@ -51,4 +51,76 @@ MLlib chuẩn hóa các API để giúp kết hợp nhiều thuật toán vào m
 + <b>Transformer</b>: đây là một thuật toán biển đổi một Dataframe thành một Dataframe khác. Về mặt lý thuyết nó thực hiện một phương thức transform() dùng để chuyển đỏi một Dataframe thành một Dataframe khác bằng cách thêm một hoặc nhiều cột.
 + <b>Estimator</b>: là một thuật toán phù hợp trên Dataframe để tạo Transformer. Về mặt kỹ thuật, Estimator triển khai phương thức fit() và chấp nhận DataFrame tạo ra một mô hình, là một transformer.
  
+### 1.2.2 Featurization
+<p align="left">Featurization bao gồm trích xuất, biến đổi, giảm kích thước và lựa chọn:
  
+ + Tính năng trích xuất sẽ được trích xuất từ dữ liệu thô.
+ 
+ + Tính năng biến đổi bao gồm mở rộng, tái tạo và chỉnh sửa.
+ 
+ + Tính năng lựa chọn liên quan đến việc chọn một tập hợp con các tính năng cần thiết từ một tập hợp lớn các tính năng.
+ 
+</p>
+
+### 1.2.3 Pipelines
+
+<p align="left">Pipelines giúp kết nối các Estimator và Transformer lại với nhau theo một quy trình của làm việc của ML. Đồng thời nó cũng cung cấp công cụ để đánh giá, xây dựng và điều chỉnh ML pipelines.</p>
+
+### 1.2.4 Sự ổn định
+<p align="left">Sự ổn định giúp duy trì quá trình tính toán các thuật toán, mô hình và Pipelines. Giúp chúng ta giảm thiểu được chi phí và tái sử dụng.</p>
+
+### 1.2.5 Tiện ích
+<p align="left">Các tiện ích cho đại số tuyến tính, thống kê và xử lý dữ liệu. Ví dụ mllib.linalg hỗ trợ cho đại số tuyến tính.</p>
+
+## 1.3 Sử dụng Spark Mllib với Python
+### Phân loại nhị phân
+
+<p align="left">Ví dụ sau đây sẽ hướng dẫn chúng ta load tập dữ liệu, xây dựng mô hình hồi quy Logistic và đưa ra dự đoán kết quả mô hình để tính toán lỗi huấn luyện.</p>
+
+```objective-python
+
+from pyspark.mllib.classification import LogisticRegressionWithSGD
+from numpy import array
+
+# Load và phân tích data
+
+data = sc.textFile("mllib/data/sample_svm_data.txt")
+
+parsedData = data.map(lambda line: array([float(x) for x in line.split(' ')]))
+
+model = LogisticRegressionWithSGD.train(parsedData)
+
+# Xây dựng mô hình
+
+labelsAndPreds = parsedData.map(lambda point: (int(point.item(0)),
+        model.predict(point.take(range(1, point.size)))))
+
+# Đánh gia mô hình trên tập dữ liệu train
+
+trainErr = labelsAndPreds.filter(lambda (v, p): v != p).count() / float(parsedData.count())
+
+print("Training Error = " + str(trainErr))
+
+```
+
+### Hồi quy tuyến tính
+<p align="left">Ví dụ sau sẽ minh họa cách load dữ liệu training, phân tích cú pháp nó dưới dạng RDD của LabeledPoint. Sau đó chúng ta sẽ sử dụng LinearRegressionWithSGD để xây dựng một mô hình tuyến tính đơn giản để dự đoán các giá trị label. Chúng ta sẽ tính toán sai số trung bình bình phương (Mean Squared Error) ở cuối để đánh giá mức độ phù hợp (goodness of fit)</p>
+
+```objective-python
+from pyspark.mllib.regression import LinearRegressionWithSGD
+from numpy import array
+
+# Load and phân tích data
+data = sc.textFile("mllib/data/ridge-data/lpsa.data")
+parsedData = data.map(lambda line: array([float(x) for x in line.replace(',', ' ').split(' ')]))
+
+# Xây dựng mô hình
+model = LinearRegressionWithSGD.train(parsedData)
+
+# Đánh giá mô hình trên tập dữ liệu train
+valuesAndPreds = parsedData.map(lambda point: (point.item(0),
+        model.predict(point.take(range(1, point.size)))))
+MSE = valuesAndPreds.map(lambda (v, p): (v - p)**2).reduce(lambda x, y: x + y)/valuesAndPreds.count()
+print("Mean Squared Error = " + str(MSE))
+
+```
