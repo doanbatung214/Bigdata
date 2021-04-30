@@ -174,3 +174,37 @@ MSE = ratesAndPreds.map(lambda r: (r[1][0] - r[1][1])**2).reduce(lambda x, y: x 
 print("Mean Squared Error = " + str(MSE))
 ```
 <p align="left">Nếu ma trận xếp hạng được lấy từ một nguồn khác (tức là nó được suy ra từ các signal khác), chúng ta cũng có thể sử dụng phương pháp ngầm định đào tạo để có được kết quả tốt hơn.</p>
+
+ # 2. Spark Dataframe
+ ## 2.1 Khái niệm
+ 
+Khung dữ liệu (dataframe) là một bảng hoặc cấu trúc giống như mảng hai chiều, trong mà mỗi cột chứa các phép đo trên một biến và mỗi hàng chứa một trường hợp.
+
+Vì vậy, một DataFrame có siêu dữ liệu bổ sung do định dạng bảng của nó, cho phép Spark chạy một số tối ưu hóa nhất định trên truy vấn đã hoàn thành. 
+
+Mặt khác, RDD theo như chúng ta biết chỉ là một Resilient Distribution Dataset có nhiều hộp đen dữ liệu không thể được tối ưu hóa như các hoạt động có thể được thực hiện chống lại nó, không bị ràng buộc.
+
+Tuy nhiên, chúng ta có thể chuyển từ DataFrame sang RDD thông qua phương thức rdd của nó và ngược lại có thể chuyển từ RDD sang DataFrame (nếu RDD ở định dạng bảng) thông qua phương thức toDF.
+
+Nhìn chung, chúng ta nên sử dụng DataFrame trong trường hợp có thể do tối ưu hóa truy vấn tích hợp.
+
+## 2.2 Một số tính năng của Dataframe và nguồn dữ liệu PySpark
+### 2.2.1 Tính năng
+
+DataFrame được phân phối trong tự nhiên, làm cho nó trở thành một cấu trúc dữ liệu có khả năng chịu lỗi và có tính khả dụng cao.
+
+Đánh giá lười biếng là một chiến lược đánh giá giữ việc đánh giá một biểu thức cho đến khi giá trị của nó là cần thiết. Nó tránh đánh giá lặp lại. Đánh giá lười biếng trong Spark có nghĩa là quá trình thực thi sẽ không bắt đầu cho đến khi một hành động được kích hoạt. Trong Spark, bức tranh về sự lười biếng xuất hiện khi các phép biến đổi Spark xảy ra.
+
+### 2.2.2 Nguồn dữ liệu PySpark
+
+Dữ liệu có thể được tải vào thông qua tệp CSV, JSON, XML hoặc tệp Parquet. Nó cũng có thể được tạo bằng cách sử dụng RDD hiện có và thông qua bất kỳ cơ sở dữ liệu nào khác, như Hive hoặc Cassandra . Nó cũng có thể lấy dữ liệu từ HDFS hoặc hệ thống tệp cục bộ.
+
+### 2.2.3 Một số lợi ích khi sử dụng Spark Dataframe
+
++ Xử lý dữ liệu có cấu trúc và bán cấu trúc: DataFrames được thiết kế để xử lý một tập hợp lớn dữ liệu có cấu trúc cũng như bán cấu trúc . Các quan sát trong Spark DataFrame được tổ chức dưới các cột được đặt tên, giúp Apache Spark hiểu được lược đồ của Dataframe. Điều này giúp Spark tối ưu hóa kế hoạch thực thi trên các truy vấn này. Nó cũng có thể xử lý hàng petabyte dữ liệu.
+
++ Slicing và Dicing: API DataFrames thường hỗ trợ các phương pháp phức tạp để cắt và phân loại dữ liệu. Nó bao gồm các hoạt động như "selecting" hàng, cột và ô theo tên hoặc theo số, lọc ra các hàng, v.v. Dữ liệu thống kê thường rất lộn xộn và chứa nhiều giá trị bị thiếu và không chính xác cũng như vi phạm phạm vi. Vì vậy, một tính năng cực kỳ quan trọng của DataFrames là quản lý rõ ràng dữ liệu bị thiếu.
+
++ Hỗ trợ nhiều ngôn ngữ: Hỗ trợ API cho các ngôn ngữ khác nhau như Python, R, Scala, Java, giúp những người có nền tảng lập trình khác nhau sử dụng dễ dàng hơn. 
+
++	Nguồn dữ liệu: DataFrames có hỗ trợ cho nhiều định dạng và nguồn dữ liệu, chúng ta sẽ xem xét vấn đề này sau trong hướng dẫn Pyspark DataFrames này. Họ có thể lấy dữ liệu từ nhiều nguồn khác nhau.
