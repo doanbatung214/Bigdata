@@ -124,3 +124,53 @@ MSE = valuesAndPreds.map(lambda (v, p): (v - p)**2).reduce(lambda x, y: x + y)/v
 print("Mean Squared Error = " + str(MSE))
 
 ```
+
+### Phân cụm
+<p align="left">Sau khi tải và phân tích dữ liệu, chúng ta sử dụng đối tượng KMeans để phân cụm dữ liệu thành hai cụm. Số lượng các cụm được chuyển đến thuật toán. Sau đó, chúng ta tính toán (Within Set Sum of Squared Error - WSSSE). Ta có thể giảm số đo sai số này bằng cách tăng k.</p>
+
+```objective-pyhton
+from pyspark.mllib.clustering import KMeans
+from numpy import array
+from math import sqrt
+
+# Load và phân tích data
+data = sc.textFile("kmeans_data.txt")
+parsedData = data.map(lambda line: array([float(x) for x in line.split(' ')]))
+
+# Xây dựng mô hình (phân cụm data)
+clusters = KMeans.train(parsedData, 2, maxIterations=10,
+        runs=30, initialization_mode="random")
+
+# Đánh giá phân cụm dựa trên Within Set Sum of Squared Errors
+def error(point):
+    center = clusters.centers[clusters.predict(point)]
+    return sqrt(sum([x**2 for x in (point - center)]))
+
+WSSSE = parsedData.map(lambda point: error(point)).reduce(lambda x, y: x + y)
+print("Within Set Sum of Squared Error = " + str(WSSSE))
+```
+<p align="left">Ngoài ra, chúng ta cũng có thể sử dụng RidgeRegressionWithSGD hoặc LassoWithSGD và so sánh các lỗi trung bình bình phương (Mean Squared Error) khi huấn luyện.</p>
+
+### Lọc cộng tác
+<p align="left">Trong ví dụ sau, chúng ta sẽ load dữ liệu đánh giá. Mỗi dòng bao gồm một người dùng, một sản phẩm và một đánh giá. Chúng ta sử dụng ALS.train() mặc định, giả định xếp hạng là rõ ràng. Chúng ta đánh giá đề xuất bằng cách đo Sai số trung bình bình phương của dự đoán xếp hạng.</p>
+
+```objective-python
+
+from pyspark.mllib.recommendation import ALS
+from numpy import array
+
+# Load và phân tích data
+data = sc.textFile("mllib/data/als/test.data")
+ratings = data.map(lambda line: array([float(x) for x in line.split(',')]))
+
+# Xây dựng mô hình gợi ý sử dụng Alternating Least Squares
+model = ALS.train(ratings, 1, 20)
+
+# Đánh giá mô hình trên tập dữ liệu train
+testdata = ratings.map(lambda p: (int(p[0]), int(p[1])))
+predictions = model.predictAll(testdata).map(lambda r: ((r[0], r[1]), r[2]))
+ratesAndPreds = ratings.map(lambda r: ((r[0], r[1]), r[2])).join(predictions)
+MSE = ratesAndPreds.map(lambda r: (r[1][0] - r[1][1])**2).reduce(lambda x, y: x + y)/ratesAndPreds.count()
+print("Mean Squared Error = " + str(MSE))
+```
+<p align="left">Nếu ma trận xếp hạng được lấy từ một nguồn khác (tức là nó được suy ra từ các signal khác), chúng ta cũng có thể sử dụng phương pháp ngầm định đào tạo để có được kết quả tốt hơn.</p>
