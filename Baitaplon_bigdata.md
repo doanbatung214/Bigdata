@@ -208,3 +208,10 @@ Dữ liệu có thể được tải vào thông qua tệp CSV, JSON, XML hoặc
 + Hỗ trợ nhiều ngôn ngữ: Hỗ trợ API cho các ngôn ngữ khác nhau như Python, R, Scala, Java, giúp những người có nền tảng lập trình khác nhau sử dụng dễ dàng hơn. 
 
 +	Nguồn dữ liệu: DataFrames có hỗ trợ cho nhiều định dạng và nguồn dữ liệu, chúng ta sẽ xem xét vấn đề này sau trong hướng dẫn Pyspark DataFrames này. Họ có thể lấy dữ liệu từ nhiều nguồn khác nhau.
+
+# Tài liệu tham khảo
+1. https://spark.apache.org/docs/latest/sql-programming-guide.html
+2. https://towardsdatascience.com/the-most-complete-guide-to-pyspark-dataframes-2702c343b2e8
+3. http://spark.apache.org/docs/latest/ml-guide.html
+4. https://www.baeldung.com/spark-mlib-machine-learning
+5. https://ichi.pro/vi/spark-for-machine-learning-su-dung-python-va-mllib-74075263465224
