@@ -180,7 +180,9 @@ print("Mean Squared Error = " + str(MSE))
  
 Khung dữ liệu (dataframe) là một bảng hoặc cấu trúc giống như mảng hai chiều, trong mà mỗi cột chứa các phép đo trên một biến và mỗi hàng chứa một trường hợp.
 
-Vì vậy, một DataFrame có siêu dữ liệu bổ sung do định dạng bảng của nó, cho phép Spark chạy một số tối ưu hóa nhất định trên truy vấn đã hoàn thành. 
+Vì vậy, một DataFrame có siêu dữ liệu bổ sung do định dạng bảng của nó, cho phép Spark chạy một số tối ưu hóa nhất định trên truy vấn đã hoàn thành.
+
+<p align="center"> <img src ="https://ongxuanhong.files.wordpress.com/2016/05/spark-dataframes.png" />
 
 Mặt khác, RDD theo như chúng ta biết chỉ là một Resilient Distribution Dataset có nhiều hộp đen dữ liệu không thể được tối ưu hóa như các hoạt động có thể được thực hiện chống lại nó, không bị ràng buộc.
 
@@ -194,6 +196,7 @@ Nhìn chung, chúng ta nên sử dụng DataFrame trong trường hợp có th�
 DataFrame được phân phối trong tự nhiên, làm cho nó trở thành một cấu trúc dữ liệu có khả năng chịu lỗi và có tính khả dụng cao.
 
 Đánh giá lười biếng là một chiến lược đánh giá giữ việc đánh giá một biểu thức cho đến khi giá trị của nó là cần thiết. Nó tránh đánh giá lặp lại. Đánh giá lười biếng trong Spark có nghĩa là quá trình thực thi sẽ không bắt đầu cho đến khi một hành động được kích hoạt. Trong Spark, bức tranh về sự lười biếng xuất hiện khi các phép biến đổi Spark xảy ra.
+<p align="center"> <img src ="https://cdn.helpex.vn/upload/2019/2/19/ar/04-21-36-927-3156016a-bdfd-49ab-b9b1-a6878a618ac1.jpg" />
 
 ### 2.2.2 Nguồn dữ liệu PySpark
 
@@ -208,6 +211,12 @@ Dữ liệu có thể được tải vào thông qua tệp CSV, JSON, XML hoặc
 + Hỗ trợ nhiều ngôn ngữ: Hỗ trợ API cho các ngôn ngữ khác nhau như Python, R, Scala, Java, giúp những người có nền tảng lập trình khác nhau sử dụng dễ dàng hơn. 
 
 +	Nguồn dữ liệu: DataFrames có hỗ trợ cho nhiều định dạng và nguồn dữ liệu, chúng ta sẽ xem xét vấn đề này sau trong hướng dẫn Pyspark DataFrames này. Họ có thể lấy dữ liệu từ nhiều nguồn khác nhau.
+
+### 2.2.4 Hạn chế
+
+<p align="center"> API DataFrame không hỗ trợ biên dịch thời gian một cách an toàn, điều này giới hạn người dùng khi thao tác dữ liệu khi không biết cấu trúc của dữ liệu.</p>
+
+<p align="center">Ngoài ra, sau khi chuyển đổi đối tượng miền thành DataFrame, người dùng không thể tạo lại nó.</p>
 
 # Tài liệu tham khảo
 1. https://spark.apache.org/docs/latest/sql-programming-guide.html
